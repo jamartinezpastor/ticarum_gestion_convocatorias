@@ -1,0 +1,72 @@
+TICARUM - Gestión de convocatorias
+
+Definición del ejercicio:
+Desarrollar una aplicación web para gestionar convocatorias de exámenes e inscripciones de alumnos. La aplicación deberá permitir gestionar el ciclo completo: desde la creación de una convocatoria hasta el control de los alumnos inscritos, garantizando en todo momento la integridad de los datos.
+
+
+
+Creación del Proyecto:
+• La aplicación se desarrollará en PHP nativo (sin frameworks), con HTML, CSS y JavaScript.
+• Deberá ser compatible con PHP 8.2 o superior.
+• Se espera una estructura organizada tipo MVC o equivalente, con separación clara de responsabilidades.
+• La base de datos será MariaDB o MySQL. Se deberá entregar el script SQL completo de creación del esquema (tablas, vistas, restricciones e inserts de datos de prueba).
+• El proyecto debe ser ejecutable de manera autónoma: con importar el SQL y configurar la conexión debe funcionar sin pasos adicionales.
+• En el diseño del esquema de base de datos se valorará un modelo simple y bien justificado.
+
+
+
+La aplicación realizará las siguientes funciones:
+1. Gestión de Convocatorias de Examen
+La aplicación permitirá listar, crear, editar y eliminar convocatorias de examen. Cada convocatoria tendrá: asignatura, fecha, aula y plazas máximas. El listado mostrará en todo momento las plazas disponibles actualizadas.
+No se podrá eliminar una convocatoria que tenga alumnos inscritos.
+
+2. Gestión de Alumnos
+La aplicación permitirá listar, crear, editar y eliminar alumnos. Cada alumno tendrá: nombre, apellidos, correo electrónico y DNI.
+No se podrá eliminar un alumno que tenga inscripciones activas.
+
+3. Gestión de Inscripciones
+Desde el detalle de una convocatoria se podrá consultar el listado de alumnos inscritos, añadir una nueva inscripción y eliminar una existente. El número de plazas disponibles de la convocatoria deberá reflejarse correctamente tras cada alta o baja.
+Al inscribir a un alumno el sistema validará:
+ -  Que la convocatoria no haya superado su límite de plazas.
+ -  Que el alumno no esté ya inscrito en esa convocatoria.
+ -  Que el alumno no tenga otra inscripción activa en un examen celebrado el mismo día.
+ -  Que la fecha de la convocatoria no haya pasado.
+
+
+
+Requisitos obligatorios de la implementación:
+ -  Backend: PHP nativo 8.2 o superior.
+ -  Frontend: HTML5, CSS3 y JavaScript (se puede usar jQuery).
+ -  Base de datos: MariaDB o MySQL.
+ -  Se deberá entregar un script SQL con la definición completa del esquema y datos de prueba suficientes para poder probar todas las funcionalidades sin insertar datos manualmente.
+ -  Se debe garantizar la integridad de los datos.
+ -  El código debe seguir una estructura MVC o equivalente claramente distinguible.
+
+
+
+Aspectos valorables:
+ -  Diseño y normalización de la base de datos.
+ -  Claridad, legibilidad y organización del código.
+ -  Separación limpia entre lógica de negocio, acceso a datos y presentación.
+ -  Experiencia de usuario: feedback claro ante errores y acciones exitosas.
+ -  Uso de transacciones SQL donde sea necesario para mantener la coherencia.
+ -  Comentarios y documentación interna del código.
+
+
+
+Notas adicionales:
+El candidato es libre de estructurar el esquema de base de datos como considere más adecuado, valorando un modelo simple y bien justificado. Se valorará especialmente la coherencia del modelo de datos, así como la capacidad del candidato para justificar decisiones de diseño y alternativas descartadas, tanto a nivel de código como de estructura del proyecto.
+
+
+
+Aspectos valorables:
+ -  Diseño de la base de datos
+ -  Claridad y estructura del código
+ -  Aplicación de patrones de diseño
+ -  Claridad y estructura de documentación
+ -  Uso de buenas prácticas de programación y nombrado
+ -  Correcto uso de los códigos de respuesta HTTP
+ -  Las acciones que se realicen deben dejar el sistema coherente
+ -  Se deberá gestionar correctamente los casos erróneos.
+ -  Uso de Domain Driven Design y arquitecturas Hexagonales
+ -  Documentación de los endpoints en formato OpenApi/Swagger
