@@ -17,6 +17,7 @@ session_start();
 use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\AlumnoController;
+use App\Controllers\ConvocatoriaController;
 
 $router = new Router();
 
@@ -29,5 +30,14 @@ $router->post  ('/alumnos',                [AlumnoController::class, 'store']);
 $router->get   ('/alumnos/{id}/editar',    [AlumnoController::class, 'edit']);
 $router->put   ('/alumnos/{id}',           [AlumnoController::class, 'update']);
 $router->delete('/alumnos/{id}',           [AlumnoController::class, 'destroy']);
+
+// Convocatorias (CRUD)
+$router->get   ('/convocatorias',                [ConvocatoriaController::class, 'index']);
+$router->get   ('/convocatorias/crear',          [ConvocatoriaController::class, 'create']);
+$router->post  ('/convocatorias',                [ConvocatoriaController::class, 'store']);
+$router->get   ('/convocatorias/{id}/editar',    [ConvocatoriaController::class, 'edit']);
+$router->get   ('/convocatorias/{id}',           [ConvocatoriaController::class, 'show']);
+$router->put   ('/convocatorias/{id}',           [ConvocatoriaController::class, 'update']);
+$router->delete('/convocatorias/{id}',           [ConvocatoriaController::class, 'destroy']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

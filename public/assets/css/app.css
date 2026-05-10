@@ -209,3 +209,29 @@ li { margin: 0.25rem 0; }
     color: #b71c1c;
     border-color: #ffcdd2;
 }
+
+/* Marcas de estado */
+
+.badge {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.badge-abierta    { background: #e8f5e9; color: #1b5e20; }
+.badge-completa   { background: #fff3e0; color: #b53d00; }
+.badge-finalizada { background: #f0f0f0; color: #555; }
+
+.page-header > div { flex: 1; }
+
+.subhead {
+    color: var(--c-muted);
+    font-size: 0.95rem;
+    margin-top: 0.25rem;
+}
+
+.card + .card { margin-top: 1rem; }
+.card h2 { margin-bottom: 0.75rem; }

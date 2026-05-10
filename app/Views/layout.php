@@ -16,6 +16,7 @@
         <nav>
             <a href="/">Inicio</a>
             <a href="/alumnos">Alumnos</a>
+            <a href="/convocatorias">Convocatorias</a>
         </nav>
     </div>
 </header>
