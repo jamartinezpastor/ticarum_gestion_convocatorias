@@ -21,8 +21,10 @@ abstract class Controller
         require __DIR__ . '/../Views/layout.php';
     }
 
-    protected function redirect(string $url): never
+    # 'See other' por GET
+    protected function redirect(string $url, int $status = 303): never
     {
+        http_response_code($status);
         header("Location: {$url}");
         exit;
     }
@@ -33,5 +35,16 @@ abstract class Controller
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($data, JSON_UNESCAPED_UNICODE);
         exit;
+    }
+
+    protected function flash(string $type, string $message): void
+    {
+        $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+    }
+
+    protected function notFound(string $message = 'Recurso no encontrado.'): void
+    {
+        http_response_code(404);
+        $this->render('error', ['title' => '404', 'message' => $message]);
     }
 }

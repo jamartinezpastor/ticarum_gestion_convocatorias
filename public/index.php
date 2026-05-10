@@ -16,8 +16,18 @@ session_start();
 
 use App\Core\Router;
 use App\Controllers\HomeController;
+use App\Controllers\AlumnoController;
 
 $router = new Router();
+
 $router->get('/', [HomeController::class, 'index']);
+
+// Alumnos (CRUD)
+$router->get   ('/alumnos',                [AlumnoController::class, 'index']);
+$router->get   ('/alumnos/crear',          [AlumnoController::class, 'create']);
+$router->post  ('/alumnos',                [AlumnoController::class, 'store']);
+$router->get   ('/alumnos/{id}/editar',    [AlumnoController::class, 'edit']);
+$router->put   ('/alumnos/{id}',           [AlumnoController::class, 'update']);
+$router->delete('/alumnos/{id}',           [AlumnoController::class, 'destroy']);
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

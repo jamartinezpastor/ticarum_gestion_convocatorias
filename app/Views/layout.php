@@ -15,10 +15,17 @@
         <a href="/" class="brand">GESTIÓN CONVOCATORIAS</a>
         <nav>
             <a href="/">Inicio</a>
+            <a href="/alumnos">Alumnos</a>
         </nav>
     </div>
 </header>
 <main class="container">
+    <?php if (!empty($_SESSION['flash'])): ?>
+        <div class="alert alert-<?= htmlspecialchars($_SESSION['flash']['type']) ?>">
+            <?= htmlspecialchars($_SESSION['flash']['message']) ?>
+        </div>
+        <?php unset($_SESSION['flash']); ?>
+    <?php endif; ?>
     <?= $content ?>
 </main>
 <script src="/assets/js/app.js" defer></script>
