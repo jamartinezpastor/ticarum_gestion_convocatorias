@@ -25,6 +25,7 @@ final class ConvocatoriaController extends Controller
             'title' => $convocatoria['asignatura'],
             'convocatoria' => $convocatoria,
             'inscritos' => Convocatoria::inscritos((int) $id),
+            'alumnosDisponibles' => \App\Models\Alumno::noInscritos((int) $id),
         ]);
     }
 

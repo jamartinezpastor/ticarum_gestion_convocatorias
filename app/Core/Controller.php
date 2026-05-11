@@ -47,4 +47,11 @@ abstract class Controller
         http_response_code(404);
         $this->render('error', ['title' => '404', 'message' => $message]);
     }
+
+    protected function noContent(): never
+    {
+        http_response_code(204);
+        exit;
+    }
+
 }

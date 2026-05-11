@@ -310,3 +310,25 @@ li { margin: 0.25rem 0; }
     text-decoration: underline;
 }
 .btn-link:hover { color: var(--c-primary-dark); }
+
+/* form inline para inscribir + ajax */
+
+.inline-flex-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+}
+.inline-flex-form select {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 1rem;
+    background: var(--c-surface);
+}
+.inline-flex-form select:focus {
+    outline: 2px solid var(--c-primary);
+    outline-offset: -1px;
+    border-color: var(--c-primary);
+}

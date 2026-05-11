@@ -18,6 +18,7 @@ use App\Core\Router;
 use App\Controllers\HomeController;
 use App\Controllers\AlumnoController;
 use App\Controllers\ConvocatoriaController;
+use App\Controllers\InscripcionController;
 
 $router = new Router();
 
@@ -39,5 +40,10 @@ $router->get   ('/convocatorias/{id}/editar',    [ConvocatoriaController::class,
 $router->get   ('/convocatorias/{id}',           [ConvocatoriaController::class, 'show']);
 $router->put   ('/convocatorias/{id}',           [ConvocatoriaController::class, 'update']);
 $router->delete('/convocatorias/{id}',           [ConvocatoriaController::class, 'destroy']);
+
+// Inscripciones (endpoints REST/JSON)
+$router->post  ('/convocatorias/{id}/inscripciones', [InscripcionController::class, 'store']);
+$router->delete('/inscripciones/{id}',                [InscripcionController::class, 'destroy']);
+
 
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

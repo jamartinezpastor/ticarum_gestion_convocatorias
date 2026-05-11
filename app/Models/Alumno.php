@@ -159,4 +159,15 @@ final class Alumno
         return array_values($alumnos);
     }
 
+    public static function noInscritos(int $convocatoriaId): array
+    {
+        $stmt = Database::pdo()->prepare(
+            'SELECT * FROM alumnos
+          WHERE id NOT IN (SELECT alumno_id FROM inscripciones WHERE convocatoria_id = ?)
+          ORDER BY apellidos, nombre'
+        );
+        $stmt->execute([$convocatoriaId]);
+        return $stmt->fetchAll();
+    }
+
 }
