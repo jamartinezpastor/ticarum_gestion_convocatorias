@@ -12,7 +12,7 @@ final class AlumnoController extends Controller
     {
         $this->render('alumnos/index', [
             'title' => 'Alumnos',
-            'alumnos' => Alumno::all(),
+            'alumnos' => Alumno::allWithConvocatorias(),
         ]);
     }
 

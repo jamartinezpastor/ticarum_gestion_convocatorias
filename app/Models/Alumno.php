@@ -118,4 +118,45 @@ final class Alumno
         $stmt->execute($params);
         return (bool) $stmt->fetchColumn();
     }
+
+    /**
+     * Devuelve todos los alumnos con sus convocatorias inscritas anidadas.
+     * Una sola consulta con LEFT JOIN, agrupada en PHP.
+     */
+    public static function allWithConvocatorias(): array
+    {
+        $rows = Database::pdo()->query(
+            'SELECT a.id, a.dni, a.nombre, a.apellidos, a.email,
+                c.id AS conv_id, c.asignatura, c.fecha, c.aula
+           FROM alumnos a
+           LEFT JOIN inscripciones i ON i.alumno_id = a.id
+           LEFT JOIN convocatorias c ON c.id = i.convocatoria_id
+          ORDER BY a.apellidos, a.nombre, c.fecha'
+        )->fetchAll();
+
+        $alumnos = [];
+        foreach ($rows as $r) {
+            $id = $r['id'];
+            if (!isset($alumnos[$id])) {
+                $alumnos[$id] = [
+                    'id'        => $r['id'],
+                    'dni'       => $r['dni'],
+                    'nombre'    => $r['nombre'],
+                    'apellidos' => $r['apellidos'],
+                    'email'     => $r['email'],
+                    'convocatorias' => [],
+                ];
+            }
+            if ($r['conv_id'] !== null) {
+                $alumnos[$id]['convocatorias'][] = [
+                    'id'         => $r['conv_id'],
+                    'asignatura' => $r['asignatura'],
+                    'fecha'      => $r['fecha'],
+                    'aula'       => $r['aula'],
+                ];
+            }
+        }
+        return array_values($alumnos);
+    }
+
 }
