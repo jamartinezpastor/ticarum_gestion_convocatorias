@@ -30,5 +30,34 @@
     <?= $content ?>
 </main>
 <script src="/assets/js/app.js" defer></script>
+
+<!-- Modal eliminación -->
+<div class="modal-backdrop" id="confirm-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Confirmar</h2>
+            <button type="button" class="modal-close" aria-label="Cerrar">×</button>
+        </div>
+        <p data-confirm-message style="margin-bottom: 1.5rem;"></p>
+        <div class="modal-actions">
+            <button type="button" class="btn" data-confirm-cancel>Cancelar</button>
+            <button type="button" class="btn btn-danger" data-confirm-ok>
+                <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                Eliminar
+            </button>
+        </div>
+    </div>
+</div>
 </body>
+
+<svg style="display:none" aria-hidden="true">
+    <symbol id="icon-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6"/>
+        <path d="M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+    </symbol>
+</svg>
+
 </html>

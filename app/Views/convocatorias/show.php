@@ -27,16 +27,24 @@
         <?php if (empty($alumnosDisponibles)): ?>
             <p>Todos los alumnos del sistema ya están inscritos en esta convocatoria.</p>
         <?php else: ?>
+            # Búsqueda en el select
             <form data-inscripcion-form data-convocatoria-id="<?= $convocatoria['id'] ?>" class="inline-flex-form">
-                <select name="alumno_id" required>
-                    <option value="">Selecciona un alumno…</option>
-                    <?php foreach ($alumnosDisponibles as $a): ?>
-                        <option value="<?= $a['id'] ?>">
-                            <?= htmlspecialchars($a['apellidos'] . ', ' . $a['nombre']) ?>
-                            (<?= htmlspecialchars($a['dni']) ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <div class="combo" data-combo>
+                    <input type="text"
+                           class="combo-input"
+                           placeholder="Busca un alumno por nombre, apellidos o DNI…"
+                           autocomplete="off">
+                    <input type="hidden" name="alumno_id" required>
+                    <ul class="combo-options">
+                        <?php foreach ($alumnosDisponibles as $a): ?>
+                            <?php $search = strtolower($a['nombre'] . ' ' . $a['apellidos'] . ' ' . $a['dni']); ?>
+                            <li data-value="<?= $a['id'] ?>" data-search="<?= htmlspecialchars($search) ?>">
+                                <?= htmlspecialchars($a['apellidos'] . ', ' . $a['nombre']) ?>
+                                <small>(<?= htmlspecialchars($a['dni']) ?>)</small>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
                 <button type="submit" class="btn btn-primary">Inscribir</button>
             </form>
         <?php endif; ?>
@@ -64,9 +72,10 @@
                     <td><?= htmlspecialchars($a['apellidos']) ?></td>
                     <td><?= htmlspecialchars($a['email']) ?></td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-danger"
-                                data-inscripcion-delete="<?= $a['inscripcion_id'] ?>">
-                            Eliminar
+                        <button type="button" class="btn btn-sm btn-danger btn-icon-only"
+                                data-inscripcion-delete="<?= $a['inscripcion_id'] ?>"
+                                title="Eliminar inscripción">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
                         </button>
                     </td>
                 </tr>

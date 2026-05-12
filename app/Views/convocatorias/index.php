@@ -32,10 +32,18 @@
                 <td class="actions">
                     <a href="/convocatorias/<?= $c['id'] ?>" class="btn btn-sm">Ver</a>
                     <a href="/convocatorias/<?= $c['id'] ?>/editar" class="btn btn-sm">Editar</a>
+                    <!-- Cambiado onsubmit="" por data-confirm, que es recogido por el handler confirmDialog() de app.js -->
+                    <?php $tieneInscritos = (int) $c['plazas_ocupadas'] > 0; ?>
                     <form method="POST" action="/convocatorias/<?= $c['id'] ?>" class="inline-form"
-                          onsubmit="return confirm('¿Eliminar la convocatoria de <?= htmlspecialchars($c['asignatura']) ?>?');">
+                          data-confirm="¿Eliminar la convocatoria de <?= htmlspecialchars($c['asignatura']) ?>?">
                         <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        <button type="submit" class="btn btn-sm btn-danger btn-icon-only"
+                                <?= $tieneInscritos ? 'disabled' : '' ?>
+                                title="<?= $tieneInscritos
+                                        ? 'No se puede eliminar: tiene ' . $c['plazas_ocupadas'] . ' inscrito(s).'
+                                        : 'Eliminar convocatoria' ?>">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                        </button>
                     </form>
                 </td>
             </tr>

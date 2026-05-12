@@ -28,10 +28,17 @@
                 <td><?= count($a['convocatorias']) ?></td>
                 <td class="actions">
                     <a href="/alumnos/<?= $a['id'] ?>/editar" class="btn btn-sm">Editar</a>
+                    <?php $tieneInscripciones = !empty($a['convocatorias']); ?>
                     <form method="POST" action="/alumnos/<?= $a['id'] ?>" class="inline-form"
-                          onsubmit="return confirm('¿Eliminar a <?= htmlspecialchars($a['nombre'] . ' ' . $a['apellidos']) ?>?');">
+                          data-confirm="¿Eliminar a <?= htmlspecialchars($a['nombre'] . ' ' . $a['apellidos']) ?>?">
                         <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        <button type="submit" class="btn btn-sm btn-danger btn-icon-only"
+                                <?= $tieneInscripciones ? 'disabled' : '' ?>
+                                title="<?= $tieneInscripciones
+                                        ? 'No se puede eliminar: tiene ' . count($a['convocatorias']) . ' inscripción(es).'
+                                        : 'Eliminar alumno' ?>">
+                            <svg class="icon" aria-hidden="true"><use href="#icon-trash"/></svg>
+                        </button>
                     </form>
                 </td>
             </tr>
