@@ -27,7 +27,7 @@
         <?php if (empty($alumnosDisponibles)): ?>
             <p>Todos los alumnos del sistema ya están inscritos en esta convocatoria.</p>
         <?php else: ?>
-            # Búsqueda en el select
+            <!-- Búsqueda en el select -->
             <form data-inscripcion-form data-convocatoria-id="<?= $convocatoria['id'] ?>" class="inline-flex-form">
                 <div class="combo" data-combo>
                     <input type="text"

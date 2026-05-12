@@ -12,7 +12,10 @@ final class InscripcionController extends Controller
 {
     public function store(string $convocatoriaId): void
     {
-        $alumnoId = (int)($_POST['alumno_id'] ?? 0);
+        // Para API REST/OpenAPI: $payload['alumno_id' en vez de $_POST['alumno_id']
+        $payload  = json_decode(file_get_contents('php://input'), true) ?? [];
+        $alumnoId = (int) ($payload['alumno_id'] ?? 0);
+
         if ($alumnoId <= 0) {
             $this->json([
                 'error' => 'missing_alumno_id',

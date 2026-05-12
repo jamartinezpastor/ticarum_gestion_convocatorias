@@ -22,8 +22,9 @@ document.addEventListener('keydown', e => {
 });
 
 // Inscripciones: alta y baja AJAX
-
 const inscripcionForm = document.querySelector('[data-inscripcion-form]');
+
+// Para API REST/OpenAPI: En el body: en vez de FormData, se envía JSON con Content-Type: application/json.
 if (inscripcionForm) {
     inscripcionForm.addEventListener('submit', async e => {
         e.preventDefault();
@@ -35,12 +36,11 @@ if (inscripcionForm) {
             return;
         }
 
-        const formData = new FormData(inscripcionForm);
-
         try {
             const res = await fetch(`/convocatorias/${convocatoriaId}/inscripciones`, {
                 method: 'POST',
-                body: formData,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ alumno_id: parseInt(alumnoId, 10) }),
             });
 
             if (res.ok) {
