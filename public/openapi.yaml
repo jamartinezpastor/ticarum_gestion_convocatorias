@@ -1,0 +1,317 @@
+openapi: 3.0.3
+
+info:
+  title: TICARUM — API de Gestión de Convocatorias
+  version: 1.0.0
+  description: |
+    Endpoints HTTP de la aplicación TICARUM.
+
+    Dos categorías:
+    - **HTML server-rendered** (Alumnos, Convocatorias): formularios web tradicionales con respuesta `text/html`. Las acciones PUT/DELETE se simulan desde HTML con un campo oculto `_method`.
+    - **JSON REST** (Inscripciones): endpoints AJAX consumidos desde la página de detalle de convocatoria. Body y respuesta en `application/json`.
+
+servers:
+  - url: http://localhost:8000
+    description: Servidor de desarrollo (php -S)
+
+tags:
+  - name: Home
+  - name: Alumnos
+    description: CRUD de alumnos (HTML)
+  - name: Convocatorias
+    description: CRUD de convocatorias (HTML)
+  - name: Inscripciones
+    description: Alta y baja (JSON)
+
+components:
+  schemas:
+    Alumno:
+      type: object
+      properties:
+        id:        { type: integer, example: 1 }
+        nombre:    { type: string, maxLength: 100, example: 'María' }
+        apellidos: { type: string, maxLength: 150, example: 'García López' }
+        email:     { type: string, format: email, example: 'maria.garcia@test.com' }
+        dni:       { type: string, pattern: '^[0-9]{8}[A-HJ-NP-TV-Z]$', example: '12345678Z' }
+
+    AlumnoInput:
+      type: object
+      required: [nombre, apellidos, email, dni]
+      properties:
+        nombre:    { type: string, maxLength: 100 }
+        apellidos: { type: string, maxLength: 150 }
+        email:     { type: string, format: email }
+        dni:       { type: string, pattern: '^[0-9]{8}[A-HJ-NP-TV-Z]$' }
+
+    Convocatoria:
+      type: object
+      properties:
+        id:                 { type: integer, example: 1 }
+        asignatura:         { type: string, maxLength: 150, example: 'Cálculo I' }
+        fecha:              { type: string, format: date, example: '2026-06-15' }
+        aula:               { type: string, maxLength: 50, example: 'Aula A1' }
+        plazas_maximas:     { type: integer, minimum: 1, example: 30 }
+        plazas_ocupadas:    { type: integer, minimum: 0, example: 2 }
+        plazas_disponibles: { type: integer, example: 28 }
+        estado:
+          type: string
+          enum: [abierta, completa, finalizada]
+          example: abierta
+
+    ConvocatoriaInput:
+      type: object
+      required: [asignatura, fecha, aula, plazas_maximas]
+      properties:
+        asignatura:     { type: string, maxLength: 150 }
+        fecha:          { type: string, format: date }
+        aula:           { type: string, maxLength: 50 }
+        plazas_maximas: { type: integer, minimum: 1 }
+
+    InscripcionInput:
+      type: object
+      required: [alumno_id]
+      properties:
+        alumno_id: { type: integer, example: 10 }
+
+    InscripcionCreated:
+      type: object
+      properties:
+        inscripcion_id: { type: integer, example: 42 }
+
+    Error:
+      type: object
+      properties:
+        error:   { type: string, description: 'Código identificador del error' }
+        message: { type: string, description: 'Mensaje descriptivo' }
+      example:
+        error: capacity_full
+        message: La convocatoria no tiene plazas disponibles.
+
+  responses:
+    HtmlPage:
+      description: HTML renderizado por el servidor
+      content:
+        text/html: { schema: { type: string } }
+    Redirect303:
+      description: Redirección PRG tras la operación
+      headers:
+        Location: { schema: { type: string }, description: 'URL destino' }
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        text/html: { schema: { type: string } }
+    ValidationError:
+      description: Errores de validación; el formulario se re-renderiza con los mensajes inline
+      content:
+        text/html: { schema: { type: string } }
+
+paths:
+
+  /:
+    get:
+      tags: [Home]
+      summary: Página de inicio
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+
+  # ALUMNOS (HTML)
+  /alumnos:
+    get:
+      tags: [Alumnos]
+      summary: Listado de alumnos
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+    post:
+      tags: [Alumnos]
+      summary: Crear alumno
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AlumnoInput' }
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /alumnos/crear:
+    get:
+      tags: [Alumnos]
+      summary: Formulario de creación
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+
+  /alumnos/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    put:
+      tags: [Alumnos]
+      summary: Actualizar alumno
+      description: 'Desde HTML se llama como POST con `_method=PUT` en el body.'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/AlumnoInput' }
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Alumnos]
+      summary: Eliminar alumno
+      description: |
+        Desde HTML se llama como POST con `_method=DELETE`.
+        Si el alumno tiene inscripciones, redirige al listado con un mensaje flash de error y no se borra (RESTRICT a nivel BD).
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /alumnos/{id}/editar:
+    get:
+      tags: [Alumnos]
+      summary: Formulario de edición
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+
+  # CONVOCATORIAS (HTML)
+  /convocatorias:
+    get:
+      tags: [Convocatorias]
+      summary: Listado de convocatorias
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+    post:
+      tags: [Convocatorias]
+      summary: Crear convocatoria
+      description: 'Rechaza fechas anteriores a la fecha actual (hoy).'
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/ConvocatoriaInput' }
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /convocatorias/crear:
+    get:
+      tags: [Convocatorias]
+      summary: Formulario de creación
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+
+  /convocatorias/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: integer } }
+    get:
+      tags: [Convocatorias]
+      summary: Detalle de convocatoria con alumnos inscritos
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    put:
+      tags: [Convocatorias]
+      summary: Actualizar convocatoria
+      description: |
+        Vía HTML: POST con `_method=PUT`.
+        Las `plazas_maximas` no pueden quedar por debajo de los alumnos ya inscritos.
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema: { $ref: '#/components/schemas/ConvocatoriaInput' }
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Convocatorias]
+      summary: Eliminar convocatoria
+      description: 'Vía HTML: POST con `_method=DELETE`. Si tiene inscritos, redirige con mensaje flash de error y no se borra.'
+      responses:
+        '303': { $ref: '#/components/responses/Redirect303' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /convocatorias/{id}/editar:
+    get:
+      tags: [Convocatorias]
+      summary: Formulario de edición
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { $ref: '#/components/responses/HtmlPage' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # INSCRIPCIONES (JSON REST)
+  /convocatorias/{id}/inscripciones:
+    post:
+      tags: [Inscripciones]
+      summary: Inscribir un alumno en una convocatoria
+      description: |
+        Las 4 validaciones del enunciado se aplican dentro de una transacción SQL con
+        `SELECT ... FOR UPDATE` sobre la convocatoria (evita problemas con la última plaza).
+
+        Errores posibles:
+        - `409 capacity_full` — Convocatoria sin plazas.
+        - `409 already_inscribed` — El alumno ya está inscrito ahí.
+        - `409 same_day_conflict` — Tiene otra inscripción ese mismo día.
+        - `409 date_passed` — La fecha de la convocatoria ya pasó.
+        - `404 not_found_convocatoria` / `404 not_found_alumno`.
+        - `400 missing_alumno_id` — Falta el campo en el body.
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InscripcionInput' }
+      responses:
+        '201':
+          description: Inscripción creada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InscripcionCreated' }
+        '400':
+          description: Petición mal formada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Alumno o convocatoria no encontrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: Conflicto de estado (regla de negocio violada)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+              examples:
+                capacity_full:
+                  value: { error: capacity_full, message: 'La convocatoria no tiene plazas disponibles.' }
+                already_inscribed:
+                  value: { error: already_inscribed, message: 'El alumno ya está inscrito en esta convocatoria.' }
+                same_day_conflict:
+                  value: { error: same_day_conflict, message: 'El alumno ya tiene una inscripción ese día (Programación I).' }
+                date_passed:
+                  value: { error: date_passed, message: 'La fecha de la convocatoria ya ha pasado.' }
+
+  /inscripciones/{id}:
+    delete:
+      tags: [Inscripciones]
+      summary: Eliminar una inscripción
+      description: 'El trigger AFTER DELETE reduce automáticamente las plazas ocupadas.'
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '204':
+          description: Eliminada (sin cuerpo de respuesta)
+        '404':
+          description: Inscripción no encontrada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
