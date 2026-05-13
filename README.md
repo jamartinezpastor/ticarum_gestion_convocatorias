@@ -1,4 +1,6 @@
-# TICARUM — Gestión de Convocatorias
+# TICARUM — Gestión de Convocat
+
+orias
 
 Aplicación web para gestionar convocatorias de examen e inscripciones de alumnos. Desarrollada en **PHP 8.2+ nativo, sin frameworks**, con arquitectura MVC clásica.
 
@@ -22,6 +24,8 @@ O desde phpMyAdmin: Importar ---> seleccionar `sql/script_inicializacion_bd.sql 
 
 El script crea la base de datos `ticarum_convocatorias`, sus 3 tablas, los triggers, la vista y datos de prueba que cubren todos los casos de validación (convocatoria llena, fecha pasada, conflicto de mismo día, alumnos con y sin inscripciones).
 
+![bd.jpg](public/assets/bd.jpg)
+
 ### 2. Configurar la conexión
 
 Copia `config/config.example.php` a `config/config.php` y ajusta los valores según tu entorno:
@@ -30,7 +34,7 @@ Copia `config/config.example.php` a `config/config.php` y ajusta los valores seg
 return [
     'db' => [
         'host' => '127.0.0.1',
-        'name' => 'ticarum',
+        'name' => 'ticarum_convocatorias',
         'user' => 'root',
         'pass' => '',
     ],
@@ -45,8 +49,6 @@ Desde la raíz del proyecto:
 php -S localhost:8000 -t public
 ```
 
-`-t public` define `public/` como la única carpeta accesible vía web. El resto quedan fuera del documentRoot.
-
 ## URLs
 
 | URL | Descripción |
@@ -59,19 +61,23 @@ php -S localhost:8000 -t public
 
 ## Estructura del proyecto
 
-- **`app/`** — código de la aplicación.
+- **`app/`**
     - **`Controllers/`** — `HomeController`, `AlumnoController`, `ConvocatoriaController`, `InscripcionController`.
-    - **`Core/`** — `Router`, `Database` (PDO singleton), `Controller` base.
+    - **`Core/`** — `Router`, `Database`, `Controller`
     - **`Models/`** — `Alumno`, `Convocatoria`, `Inscripcion`, `InscripcionException`.
-    - **`Views/`** — `layout.php` + carpetas por recurso (`alumnos/`, `convocatorias/`).
-- **`config/`** — `config.example.php` (sí va al repo) y `config.php` (en `.gitignore`, credenciales reales).
-    - **`index.php`** — front controller + autoloader PSR-4 + rutas.
-    - **`assets/`** — `css/app.css` y `js/app.js`.
-    - **`openapi.yaml`** — especificación de la API.
-    - **`docs/`** — Swagger UI estático.
+    - **`Views/`** — `layout.php` + (`alumnos/`, `convocatorias/`).
+- **`config/`** — `config.example.php` (sube al repo) y `config.php` (en `.gitignore`, credenciales reales).
+    - **`index.php`** — front controller + rutas.
+    - **`assets/`** — `css` y `js`.
+    - **`openapi.yaml`** — especificación API.
+    - **`docs/`** — Swagger UI.
 - **`sql/schema.sql`** — esquema completo (tablas, triggers, vista) + datos de prueba.
-- **`.gitignore`**, **`README.md`**, **`DECISIONES.md`** — raíz del proyecto.
 
+## Pruebas
+
+La carpeta `tests/` contiene una colección Postman (`TICARUM.postman_collection.json`)
+con 18 requests que cubren los endpoints principales y los 7 casos de error
+documentados en OpenAPI. Importarla en Postman y ejecutar con "Run collection".
 
 ## Resumen de funcionalidades
 
@@ -79,7 +85,3 @@ php -S localhost:8000 -t public
 - **Convocatorias**: CRUD completo. El listado muestra estado calculado (`abierta` / `completa` / `finalizada`). El detalle incluye los alumnos inscritos y permite alta/baja de inscripciones desde un combo buscable.
 - **Inscripciones**: AJAX con JSON puro (REST). Las 4 validaciones del enunciado se aplican dentro de una **transacción SQL con `SELECT ... FOR UPDATE`** sobre la convocatoria.
 - **API documentada**: OpenAPI 3.0 con Swagger UI interactivo en `/docs/`.
-
-## Documentación de decisiones técnicas
-
-Ver `DECISIONES.md` para la justificación detallada del diseño: modelo de datos, MVC vs Hexagonal, gestión de transacciones, alternativas descartadas, etc.

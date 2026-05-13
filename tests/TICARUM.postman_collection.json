@@ -1,0 +1,741 @@
+{
+  "info": {
+    "_postman_id": "335262f3-c910-45d0-9f6d-970d26a763ce",
+    "name": "Ticarum - Gestión de convocatorias UM",
+    "description": "Tests automatizados para los endpoints de la aplicación TICARUM.\n\nIncluye:\n- Sanity checks (GETs básicos)\n- HTML con method-spoofing (POST + _method)\n- Inscripciones happy path (201, 204)\n- Inscripciones todos los errores documentados en OpenAPI\n\nUsa la variable de colección `baseUrl` (por defecto http://localhost:8000) para apuntar al servidor.\n\nLos seeds del schema.sql están diseñados para que estos tests funcionen tal cual.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "53184112",
+    "_collection_link": "https://go.postman.co/collection/53184112-335262f3-c910-45d0-9f6d-970d26a763ce?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "1 · Sanity checks (GET)",
+      "item": [
+        {
+          "name": "GET / (home)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve HTML', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('text/html'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /alumnos (listado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alumnos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /convocatorias (listado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /openapi.yaml",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Contiene la cabecera openapi:', () => pm.expect(pm.response.text()).to.include('openapi:'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/openapi.yaml",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "openapi.yaml"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2 · HTML con _method spoofing",
+      "item": [
+        {
+          "name": "POST /alumnos (crear)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 303 (redirect tras crear)', () => pm.response.to.have.status(303));",
+                  "pm.test('Location apunta a /alumnos', () => pm.expect(pm.response.headers.get('Location')).to.equal('/alumnos'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "nombre",
+                  "value": "Test",
+                  "type": "text"
+                },
+                {
+                  "key": "apellidos",
+                  "value": "Postman QA",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "test.postman@example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "dni",
+                  "value": "00000000T",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alumnos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /alumnos (validación falla → 422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 422', () => pm.response.to.have.status(422));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "nombre",
+                  "value": "",
+                  "type": "text"
+                },
+                {
+                  "key": "apellidos",
+                  "value": "Sin nombre",
+                  "type": "text"
+                },
+                {
+                  "key": "email",
+                  "value": "no-es-email",
+                  "type": "text"
+                },
+                {
+                  "key": "dni",
+                  "value": "12345678X",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alumnos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alumnos"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /convocatorias (fecha pasada → 422)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 422 (fecha pasada)', () => pm.response.to.have.status(422));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "asignatura",
+                  "value": "Test Asignatura",
+                  "type": "text"
+                },
+                {
+                  "key": "fecha",
+                  "value": "2020-01-01",
+                  "type": "text"
+                },
+                {
+                  "key": "aula",
+                  "value": "Aula Z9",
+                  "type": "text"
+                },
+                {
+                  "key": "plazas_maximas",
+                  "value": "20",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Los formularios HTML envían POST y usan un campo oculto `_method` para simular PUT/DELETE. Para reproducir desde Postman, manda POST con `_method=PUT|DELETE` en el body x-www-form-urlencoded. Sin esto, PHP no autopopula `$_POST` en peticiones que no son POST."
+    },
+    {
+      "name": "3 · Inscripciones · happy path",
+      "item": [
+        {
+          "name": "POST /convocatorias/4/inscripciones (Pablo → BD → 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Devuelve inscripcion_id', () => pm.expect(body).to.have.property('inscripcion_id'));",
+                  "pm.collectionVariables.set('lastInscripcionId', body.inscripcion_id);",
+                  "console.log('Guardada inscripcion_id =', body.inscripcion_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/4/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "4",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /inscripciones/{lastInscripcionId} → 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));",
+                  "pm.test('Sin body', () => pm.expect(pm.response.text()).to.equal(''));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inscripciones/{{lastInscripcionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inscripciones",
+                "{{lastInscripcionId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4 · Inscripciones · errores",
+      "item": [
+        {
+          "name": "409 capacity_full (Programación II está llena)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error = capacity_full', () => pm.expect(pm.response.json().error).to.equal('capacity_full'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/3/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "3",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "409 already_inscribed (María ya está en Cálculo)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error = already_inscribed', () => pm.expect(pm.response.json().error).to.equal('already_inscribed'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/1/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "1",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "409 same_day_conflict (María tiene Cálculo el mismo día que Álgebra)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error = same_day_conflict', () => pm.expect(pm.response.json().error).to.equal('same_day_conflict'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/2/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "2",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "409 date_passed (Sistemas Operativos es pasada)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 409', () => pm.response.to.have.status(409));",
+                  "pm.test('error = date_passed', () => pm.expect(pm.response.json().error).to.equal('date_passed'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/5/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "5",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "404 not_found_convocatoria",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error = not_found_convocatoria', () => pm.expect(pm.response.json().error).to.equal('not_found_convocatoria'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/99999/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "99999",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "404 not_found_alumno",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error = not_found_alumno', () => pm.expect(pm.response.json().error).to.equal('not_found_alumno'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"alumno_id\": 99999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/4/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "4",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "400 missing_alumno_id (body vacío)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('error = missing_alumno_id', () => pm.expect(pm.response.json().error).to.equal('missing_alumno_id'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/convocatorias/4/inscripciones",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "convocatorias",
+                "4",
+                "inscripciones"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "404 inscripción inexistente al borrar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('error = not_found', () => pm.expect(pm.response.json().error).to.equal('not_found'));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/inscripciones/99999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "inscripciones",
+                "99999"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Cada test reproduce un escenario de los 4 errores 409 + 404 (x2) + 400 documentados en OpenAPI. Los seeds del schema.sql están diseñados para que esto funcione tal cual."
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "lastInscripcionId",
+      "value": ""
+    }
+  ]
+}
