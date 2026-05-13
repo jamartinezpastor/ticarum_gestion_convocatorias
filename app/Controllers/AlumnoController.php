@@ -10,9 +10,13 @@ final class AlumnoController extends Controller
 {
     public function index(): void
     {
+        $page   = (int) ($_GET['page'] ?? 1);
+        $result = Alumno::paginateWithConvocatorias($page, 7);
+
         $this->render('alumnos/index', [
-            'title' => 'Alumnos',
-            'alumnos' => Alumno::allWithConvocatorias(),
+            'title'      => 'Alumnos',
+            'alumnos'    => $result['items'],
+            'pagination' => $result,
         ]);
     }
 

@@ -31,7 +31,7 @@ final class HomeController extends Controller
                   WHERE fecha >= CURDATE()
                 AND plazas_ocupadas < plazas_maximas
                  ORDER BY fecha ASC
-                LIMIT 5"
+                LIMIT 3"
             )->fetchAll();
 
             $this->render('home', [

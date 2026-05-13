@@ -50,4 +50,5 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    <?php include __DIR__ . '/../_pagination.php'; ?>
 <?php endif; ?>

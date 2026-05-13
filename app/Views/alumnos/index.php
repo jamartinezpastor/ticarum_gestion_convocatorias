@@ -45,6 +45,7 @@
         <?php endforeach; ?>
         </tbody>
     </table>
+    <?php include __DIR__ . '/../_pagination.php'; ?>
 
     <?php /* Modales (uno por alumno; ocultos hasta que se hace clic en su DNI) */ ?>
     <?php foreach ($alumnos as $a): ?>

@@ -484,3 +484,36 @@ a.stat-card:hover {
     .form-actions { flex-direction: column; }
     .form-actions .btn { width: 100%; justify-content: center; }
 }
+
+/* Paginación  */
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--c-border);
+}
+.pagination a,
+.pagination .disabled {
+    text-decoration: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-border);
+    color: var(--c-text);
+    transition: border-color 0.15s, background 0.15s;
+}
+.pagination a:hover {
+    border-color: var(--c-action);
+    background: rgba(25, 118, 210, 0.05);
+}
+.pagination .disabled {
+    color: var(--c-muted);
+    opacity: 0.5;
+    pointer-events: none;
+}
+.pagination .info {
+    margin-left: auto;
+    color: var(--c-muted);
+    font-size: 0.9rem;
+}

@@ -10,9 +10,13 @@ final class ConvocatoriaController extends Controller
 {
     public function index(): void
     {
+        $page   = (int) ($_GET['page'] ?? 1);
+        $result = Convocatoria::paginate($page, 7);
+
         $this->render('convocatorias/index', [
-            'title' => 'Convocatorias',
-            'convocatorias' => Convocatoria::all(),
+            'title'         => 'Convocatorias',
+            'convocatorias' => $result['items'],
+            'pagination'    => $result,
         ]);
     }
 

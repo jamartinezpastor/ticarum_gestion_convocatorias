@@ -159,6 +159,62 @@ final class Alumno
         return array_values($alumnos);
     }
 
+    /**
+     * Listado paginado
+     * Returns ['items' => [...], 'page' => N, 'totalPages' => N, 'total' => N].
+     */
+    public static function paginateWithConvocatorias(int $page = 1, int $perPage = 10): array
+    {
+        $page    = max(1, $page);
+        $offset  = ($page - 1) * $perPage;
+        $pdo     = Database::pdo();
+
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM alumnos')->fetchColumn();
+
+        $stmt = $pdo->prepare(
+            'SELECT * FROM alumnos
+       ORDER BY apellidos, nombre
+          LIMIT :limit OFFSET :offset'
+        );
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+        $alumnos = $stmt->fetchAll();
+
+        // Attach convocatorias only for the current page's alumnos
+        if (!empty($alumnos)) {
+            $ids = array_column($alumnos, 'id');
+            $ph  = implode(',', array_fill(0, count($ids), '?'));
+
+            $stmt = $pdo->prepare(
+                "SELECT i.alumno_id, c.id AS convocatoria_id, c.asignatura, c.fecha, c.aula
+               FROM inscripciones i
+               JOIN convocatorias c ON c.id = i.convocatoria_id
+              WHERE i.alumno_id IN ($ph)
+           ORDER BY c.fecha"
+            );
+            $stmt->execute($ids);
+            $rows = $stmt->fetchAll();
+
+            $byAlumno = [];
+            foreach ($rows as $r) {
+                $byAlumno[$r['alumno_id']][] = $r;
+            }
+            foreach ($alumnos as &$a) {
+                $a['convocatorias'] = $byAlumno[$a['id']] ?? [];
+            }
+            unset($a);
+        }
+
+        return [
+            'items'      => $alumnos,
+            'total'      => $total,
+            'page'       => $page,
+            'perPage'    => $perPage,
+            'totalPages' => max(1, (int) ceil($total / $perPage)),
+        ];
+    }
+
     public static function disponiblesParaFecha(string $fecha): array
     {
         $stmt = Database::pdo()->prepare(

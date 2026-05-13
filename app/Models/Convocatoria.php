@@ -119,4 +119,33 @@ final class Convocatoria
         $d = \DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
     }
+
+    /**
+     * Listado paginado
+     */
+    public static function paginate(int $page = 1, int $perPage = 10): array
+    {
+        $page    = max(1, $page);
+        $offset  = ($page - 1) * $perPage;
+        $pdo     = Database::pdo();
+
+        $total = (int) $pdo->query('SELECT COUNT(*) FROM convocatorias')->fetchColumn();
+
+        $stmt = $pdo->prepare(
+            'SELECT * FROM v_convocatorias
+       ORDER BY fecha DESC
+          LIMIT :limit OFFSET :offset'
+        );
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'items'      => $stmt->fetchAll(),
+            'total'      => $total,
+            'page'       => $page,
+            'perPage'    => $perPage,
+            'totalPages' => max(1, (int) ceil($total / $perPage)),
+        ];
+    }
 }
