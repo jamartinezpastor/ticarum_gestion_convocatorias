@@ -1,6 +1,4 @@
-# TICARUM — Gestión de Convocat
-
-orias
+# TICARUM — Gestión de Convocatorias
 
 Aplicación web para gestionar convocatorias de examen e inscripciones de alumnos. Desarrollada en **PHP 8.2+ nativo, sin frameworks**, con arquitectura MVC clásica.
 

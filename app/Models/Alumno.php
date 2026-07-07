@@ -187,7 +187,7 @@ final class Alumno
             $ph  = implode(',', array_fill(0, count($ids), '?'));
 
             $stmt = $pdo->prepare(
-                "SELECT i.alumno_id, c.id AS convocatoria_id, c.asignatura, c.fecha, c.aula
+                "SELECT i.alumno_id, c.id, c.asignatura, c.fecha, c.aula
                FROM inscripciones i
                JOIN convocatorias c ON c.id = i.convocatoria_id
               WHERE i.alumno_id IN ($ph)
