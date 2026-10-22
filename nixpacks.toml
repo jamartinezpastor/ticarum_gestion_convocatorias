@@ -1,1 +1,9 @@
 providers = ["php"]
+
+[phases.setup]
+nixpkgsArchive = "nixos-26.05-small"
+cmds = [
+  "php -v",
+  "php-fpm -v",
+  """php -r '$minimos = ["8.2" => "8.2.35", "8.3" => "8.3.36", "8.4" => "8.4.27", "8.5" => "8.5.12"]; $rama = PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION; exit(isset($minimos[$rama]) && version_compare(PHP_VERSION, $minimos[$rama], ">=") ? 0 : 1);'"""
+]
